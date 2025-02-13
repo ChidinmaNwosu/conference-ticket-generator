@@ -28,9 +28,7 @@ function ImageUploader({ onUpload }: ImageUploaderProps) {
     const data = new FormData();
     data.append("file", file);
     data.append("upload_preset", UPLOAD_PRESET);
-    if (CLOUD_NAME) {
-      data.append("CLOUD_NAME", CLOUD_NAME);
-    }
+    
 
     try {
       const res = await fetch(CLOUDINARY_URL, {
