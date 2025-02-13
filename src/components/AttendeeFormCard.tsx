@@ -18,22 +18,32 @@ function AttendeeFormCard() {
     formState: { errors },
     watch,
     setValue,
-  } = useForm<FormData>({
-    defaultValues: JSON.parse(localStorage.getItem("attendeeData") || "{}"),
-  });
-  // const avatar = watch("avatar");
+  } = useForm<FormData>();
 
+  // Load stored form values once on the client
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const storedData = localStorage.getItem("attendeeData");
+      if (storedData) {
+        const parsedData = JSON.parse(storedData);
+        Object.keys(parsedData).forEach((key) => {
+          setValue(key as keyof FormData, parsedData[key]);
+        });
+      }
+    }
+  }, [setValue]);
 
   useEffect(() => {
     const subscription = watch((value) => {
-      localStorage.setItem("attendeeData", JSON.stringify(value));
+      if (typeof window !== "undefined") {
+        localStorage.setItem("attendeeData", JSON.stringify(value));
+      }
     });
     return () => subscription.unsubscribe();
   }, [watch]);
 
   const onSubmit = (data: FormData) => {
     console.log({ ...data });
-
   };
 
   return (
@@ -65,7 +75,7 @@ function AttendeeFormCard() {
         <div className="flex flex-col gap-4">
           <span className="mt-4 border-t-4 border-[#07373F]"></span>
           <label htmlFor="fullName" className="text-[#FFFFFF] font-roboto">
-            Enter your name{" "}
+            Enter your name
           </label>
           <input
             id="fullName"
